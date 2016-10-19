@@ -30,7 +30,7 @@
 #ifndef _RPR0521RS_H_
 #define _RPR0521RS_H_
 
-#define RPR0521RS_DEVICE_ADDRESS                   (0x38)    // 7bit Addrss
+#define RPR0521RS_DEVICE_ADDRESS                   (0x38)    // 7bit Address
 #define RPR0521RS_PART_ID_VAL                      (0x0A)
 #define RPR0521RS_MANUFACT_ID_VAL                  (0xE0)
 
@@ -68,55 +68,24 @@
 class RPR0521RS
 {
   public:
-      RPR0521RS(PinName _sda, PinName _scl);
-//    unsigned char init(void) ;
+	RPR0521RS(PinName _sda, PinName _scl);
     int init(void) ;
     unsigned char get_rawpsalsval(unsigned char *data);
     unsigned char get_psalsval(unsigned short *ps, float *als);
     unsigned char check_near_far(unsigned short data);
     float convert_lx(unsigned short *data);
-    unsigned char write(unsigned char memory_address, unsigned char *data, unsigned char size);
-    unsigned char read(unsigned char memory_address, unsigned char *data, int size);
-    int write2(unsigned char command, unsigned char *data, unsigned char size);
-    int read2(unsigned char command, unsigned char *data, int size);
-
-//    void begin();
-//    void begin(uint8_t);
-//    void begin(int);
-//    void beginTransmission(uint8_t);
-    void beginTransmission(int);
-    unsigned char endTransmission(void);
-    unsigned char endTransmission(unsigned char);
-    virtual size_t wire_write(unsigned char);
-    virtual size_t wire_write(const unsigned char *, size_t);
-//    unsigned char requestFrom(unsigned char, unsigned char);
-    unsigned char requestFrom(unsigned char, unsigned char, unsigned char);
-//    unsigned char requestFrom(int, int);
-    unsigned char requestFrom(int, int, int);
-    virtual int available(void);
-    virtual int wire_read(void);
-
-//    inline size_t wire_write(unsigned long n) { return wire_write((unsigned char)n); }
-//    inline size_t wire_write(long n) { return wire_write((unsigned char)n); }
-//    inline size_t wire_write(unsigned int n) { return wire_write((unsigned char)n); }
-//    inline size_t wire_write(int n) { return wire_write((unsigned char)n); }
-//    inline size_t wire_write(const char* string) { return wire_write((const unsigned char*)string, strlen(string)); }
-
+    int write(unsigned char command, unsigned char *data, unsigned char size);
+    int read(unsigned char command, unsigned char *data, int size);
 
   private:
     unsigned short _als_data0_gain;
     unsigned short _als_data1_gain;
     unsigned short _als_measure_time;
 
-//    bool initialized = false;
     i2c_t _i2c_t;
-    PinName sda;
-    PinName scl;
-    I2C mbed_i2c;
-//    unsigned char wire_channel;
-    unsigned char rxBuffer[BUFFER_LENGTH];
-    unsigned char rxBufferIndex;
-    unsigned char rxBufferLength;
+    PinName _sda;
+    PinName _scl;
+    I2C _i2c;
 
 };
 
