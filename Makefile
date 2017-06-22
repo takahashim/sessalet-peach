@@ -6,7 +6,7 @@ all:
 #
 #  アプリケーションファイル
 #
-APPLNAME = blinky
+APPLNAME = sessalet
 USE_CXX = true
 APPL_CFG = $(APPLNAME).cfg
 
@@ -23,9 +23,8 @@ MBED_LIB_DIR = ../../mbed-lib
 #
 SRCDIR = ../../asp-1.9.2-utf8
 
-C_OBJ += pwmout_rst_sync_api.o
-CXX_OBJ += Motor.o \
-		   RPR-0521RS.o
+# CXX_OBJ += control.o \
+#		   action.o
 
 #
 #  MBEDライブラリのビルド
@@ -33,6 +32,8 @@ CXX_OBJ += Motor.o \
 include $(MBED_LIB_DIR)/common/Makefile.cmn
 include $(MBED_LIB_DIR)/mbed-src/Makefile.src
 include $(MBED_LIB_DIR)/SoftPWM/Makefile.pwm
+include $(MBED_LIB_DIR)/Motor/Makefile.mtr
+include $(MBED_LIB_DIR)/Rohm/Makefile.rhm
 include $(MBED_LIB_DIR)/Makefile.mbd
 
 #
