@@ -71,6 +71,7 @@ extern void flush_check_cyc(intptr_t exinf);
 
 int human_check();
 int seated_check();
+void flashstart();
 
 #ifdef __cplusplus
 }

@@ -81,25 +81,23 @@ int human_check(){
 
 int human_check2(){
 	int result = UNDETECTED_VAL;
-	//TODO GPIOの値を読む。
 	int rc = human_sensor2.read();
 	if (rc == 1) {
-//			syslog(LOG_ERROR, " %d[cnt]-> Near", ps_val);
+			syslog(LOG_ERROR, " %d[cnt]-> Near", rc);
 		result = DETECTED_VAL;
 	} else {
-//			syslog(LOG_ERROR, " %d[cnt]-> Far", ps_val);
+			syslog(LOG_ERROR, " %d[cnt]-> Far", rc);
 	}
 	return result;
 }
 
 void flush_check_cyc(intptr_t unused){
-//	syslog(LOG_ERROR, "--- flash check---");
+	syslog(LOG_ERROR, "--- flash check---");
 	 if(flushbutton){
-// 		syslog(LOG_ERROR, "not push");
+ 		syslog(LOG_ERROR, "not push");
 	 }else{
 	  		syslog(LOG_ERROR, "fpush push");
-///			act_tsk(FLASH_TASK);
-//		 	action.startFlash(FLASH_TIME);
+			act_tsk(FLASH_TASK);
 	 }
 
 }
@@ -128,7 +126,7 @@ void human_check_cyc(intptr_t unused) {
 // Flashタスク流水音の開始と指定時間後の停止
 void flash_task(intptr_t unused) {
 	syslog(LOG_ERROR, "--- flash task---");
-//	  action.startFlash(FLASH_TIME);
+	  flashstart();
 }
 
 void initialize(){
@@ -164,6 +162,10 @@ void spraystop(){
 	dly_tsk(500);
 	spray_motor.drive(0);
 	dly_tsk(100);
+}
+
+void flashstart(){
+	//TODO
 }
 
 void sessalet_main_task(intptr_t exinf) {
@@ -204,7 +206,6 @@ void sessalet_main_task(intptr_t exinf) {
 				sprintf(msg, "--- act seated task, from main task ---\r\n");
 				//			(void)serial_wri_dat(SIO_PORT_BT, msg, strlen(msg));
 				syslog(LOG_ERROR, msg, sizeof(msg));
-				// TODO:ほんとは着座を検知してから
 				syslog(LOG_ERROR, "seated mode");
 				int splay_flg = 0;
 				while(1){	//着座中のループ
@@ -247,7 +248,6 @@ void sessalet_main_task(intptr_t exinf) {
 			}else if(flg_sessalet == DETECTED){	//人検出
 
 				if(cover_mode == cover_close){
-	///  				  action.open();
 					memset(msg, 0x00, sizeof(msg));
 					sprintf(msg, "--- cover open ---\r\n");
 					syslog(LOG_ERROR, msg, sizeof(msg));
@@ -274,7 +274,6 @@ void sessalet_main_task(intptr_t exinf) {
 			memset(msg, 0x00, sizeof(msg));
 			sprintf(msg, "--- timeout cover close ---\r\n");
 			syslog(LOG_ERROR, msg, sizeof(msg));
-			//  		    action.close();
 			coverclose();
 			cover_mode = cover_close;
 		}
