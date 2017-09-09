@@ -7,7 +7,12 @@
 
 #include "mbed.h"
 #include "motor.h"
-#include <RPR-0521RS.h>
+
+#include "rohm-sensor-hal/rohm_hal.h"
+#include "rohm-sensor-hal/I2CCommon.h"
+#include "rohm-rpr0521/rpr0521_driver.h"
+#include "rohm-rpr0521/rpr0521.h"
+
 #include "sessalet.h"
 
 #define     MAX_SPEED           100      /* motor()  set: 0 to 100   */
@@ -38,9 +43,7 @@ static FLGPTN flg_seated = 0;
 static int timeout_flg = 0;
 static int timeout_counter = 0;
 
-RPR0521RS _human_sensor(P1_3, P1_2); //PS/ALS Sensor  TwoWire& Wire = Wire1; TwoWire Wire1(1, P1_3, P1_2);
-
- static Motor cover_motor(P4_7, P4_6, P4_5);
+static Motor cover_motor(P4_7, P4_6, P4_5);
 static Motor spray_motor(P10_12, P10_15, P8_11);
 
 //プッシュボタン（黄色 Spray）
@@ -51,11 +54,24 @@ DigitalIn flushbutton(P8_13);
 //焦電センサー(人検知)
 DigitalIn human_sensor2(P10_13);
 
+//rohm-rpr0521のDEBUG_printf(...)で使うためのシリアル入出力
+Serial pc(USBTX, USBRX);
+
+unsigned char get_psalsval(uint16_t *ps_val, uint16_t *als_val) {
+  unsigned char error;
+  uint16_t data[3];
+  error = (unsigned char)rpr0521_read_data(&data[0]);
+  *ps_val = data[0];
+  *als_val = data[1];
+  return error;
+}
+
+
 int seated_check(){
 	int result = UNDETECTED_VAL;
-	float als_val;
+	uint16_t als_val;
 	unsigned short ps_val;
-	unsigned char rc = _human_sensor.get_psalsval(&ps_val, &als_val);
+	unsigned char rc = get_psalsval(&ps_val, &als_val);
 	if (rc == 0) {
 		syslog(LOG_ERROR, "seated check ok");
 		if (ps_val > HUMAN_DETECT) {
@@ -67,9 +83,9 @@ int seated_check(){
 
 int human_check(){
 	int result = UNDETECTED_VAL;
-	float als_val;
+	uint16_t als_val;
 	unsigned short ps_val;
-	unsigned char rc = _human_sensor.get_psalsval(&ps_val, &als_val);
+	unsigned char rc = get_psalsval(&ps_val, &als_val);
 	if (rc == 0) {
 		syslog(LOG_ERROR, "sensor check ok");
 		if (ps_val > HUMAN_DETECT) {
@@ -130,7 +146,9 @@ void flash_task(intptr_t unused) {
 }
 
 void initialize(){
-	_human_sensor.init();
+    I2CCommonBegin();
+    rpr0521_wait_until_found();
+    rpr0521_initial_setup();
 //      dly_tsk(1);
 //      sta_cyc(HUMAN_CHECK_CYC);
 
